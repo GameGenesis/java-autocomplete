@@ -15,8 +15,9 @@ public class Autocomplete {
     public final static Path filePath = Path.of("data.txt");
     public static String data = "";
     public static String prompt = "";
-    public static int contextWords = 4;
-    public static int wordsToComplete = 100;
+    public static int contextWords = 4; // The number of words to look for (as context for the next word)
+    public static int topSuggestions = 3; // The number of top suggestions to pick a random suggestion from
+    public static int wordsToComplete = 100; // The number of words to autocomplete
 
     private static Random randomGenerator;
 
@@ -102,7 +103,7 @@ public class Autocomplete {
         //     }
         // }
 
-        List<String> keys = frequencyMap.entrySet().stream().sorted(Map.Entry.<String, Integer>comparingByValue().reversed()).limit(3).map(Map.Entry::getKey).collect(Collectors.toList());
+        List<String> keys = frequencyMap.entrySet().stream().sorted(Map.Entry.<String, Integer>comparingByValue().reversed()).limit(topSuggestions).map(Map.Entry::getKey).collect(Collectors.toList());
         String nextEntry = keys.size() > 0 ? keys.get(randomGenerator.nextInt(keys.size())) : "";
 
         if (nextEntry.isBlank() && contextWords > 2) {
