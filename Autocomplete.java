@@ -39,6 +39,7 @@ public class Autocomplete {
      * Extracts a string from the input file
      * @param filePath The path of the input file
      * @return A string that contains the contents of the file
+     * @exception IOException Signals that an I/O exception of some sort has occurred (e.g. file path does not exist)
      */
     public static String getData(Path filePath) {
         String inputString = "";
