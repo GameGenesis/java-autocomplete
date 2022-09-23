@@ -63,6 +63,18 @@ public class Autocomplete {
         }
 
         Str.print(frequencyMap.toString());
+
+        Map.Entry<String, Integer> maxEntry = null;
+
+        for (Map.Entry<String, Integer> entry : frequencyMap.entrySet())
+        {
+            if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0)
+            {
+                maxEntry = entry;
+            }
+        }
+
+        Str.print(String.join(" ", prompt, maxEntry.getKey()));
     }
 
     public static String getData(Path filePath) {
