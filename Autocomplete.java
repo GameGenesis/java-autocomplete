@@ -16,7 +16,7 @@ public class Autocomplete {
     public static String data = "";
     public static String prompt = "";
     public static int contextWords = 4; // The number of words to look for (as context for the next word)
-    public static int topSuggestions = 3; // The number of top suggestions to pick a random suggestion from
+    public static int numberOfSuggestions = 3; // The number of top suggestions to pick a random suggestion from
     public static int wordsToComplete = 100; // The number of words to autocomplete
 
     private static Random randomGenerator;
@@ -29,7 +29,7 @@ public class Autocomplete {
         prompt = Str.input("Enter text to autocomplete: ");
 
         for (int i = 0; i < wordsToComplete; i++) {
-            prompt = completePrompt(prompt, data, contextWords);
+            prompt = completePrompt(prompt, data, contextWords, numberOfSuggestions);
         }
 
         Str.print(prompt);
@@ -48,13 +48,20 @@ public class Autocomplete {
         return inputString;
     }
 
-    public static String completePrompt(String prompt, String data, int contextWords) {
+    public static String completePrompt(String prompt, String data, int contextWords, int numberOfSuggestions) {
         String promptWords[] = prompt.split(" ");
-        String context = promptWords[promptWords.length - contextWords];
-        for (int i = contextWords - 1; i > 0; i--) {
-            context = String.join(" ", context, promptWords[promptWords.length - i]);
+        String context = "";
+
+        if (promptWords.length < contextWords) {
+            context = prompt.toLowerCase();
         }
-        context = (context + " ").toLowerCase();
+        else {
+            context = promptWords[promptWords.length - contextWords];
+            for (int i = contextWords - 1; i > 0; i--) {
+                context = String.join(" ", context, promptWords[promptWords.length - i]);
+            }
+            context = (context + " ").toLowerCase();
+        }
         
         int index = data.indexOf(context);
         int dataLength = data.length();
@@ -93,21 +100,13 @@ public class Autocomplete {
             frequencyMap.put(contextComplete.get(i), Collections.frequency(contextComplete, contextComplete.get(i)));
         }
 
-        // Map.Entry<String, Integer> maxEntry = null;
-
-        // for (Map.Entry<String, Integer> entry : frequencyMap.entrySet())
-        // {
-        //     if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0)
-        //     {
-        //         maxEntry = entry;
-        //     }
-        // }
-
-        List<String> keys = frequencyMap.entrySet().stream().sorted(Map.Entry.<String, Integer>comparingByValue().reversed()).limit(topSuggestions).map(Map.Entry::getKey).collect(Collectors.toList());
-        String nextEntry = keys.size() > 0 ? keys.get(randomGenerator.nextInt(keys.size())) : "";
+        List<String> topSuggestions = frequencyMap
+                                        .entrySet().stream().sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                                        .limit(numberOfSuggestions).map(Map.Entry::getKey).collect(Collectors.toList());
+        String nextEntry = topSuggestions.size() > 0 ? topSuggestions.get(randomGenerator.nextInt(topSuggestions.size())) : "";
 
         if (nextEntry.isBlank() && contextWords > 2) {
-            return completePrompt(prompt, data, contextWords - 1);
+            return completePrompt(prompt, data, contextWords - 1, numberOfSuggestions);
         }
         else if (nextEntry.isBlank() && contextWords <= 2) {
             return String.join(" ", prompt, "and");
