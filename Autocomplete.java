@@ -2,7 +2,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 public class Autocomplete {
@@ -53,7 +56,13 @@ public class Autocomplete {
             }
         }
 
-        Str.print(contextComplete.toString());
+        Map<String, Integer> frequencyMap = new HashMap<String, Integer>();
+
+        for (int i = 0; i < contextComplete.size(); i++) {
+            frequencyMap.put(contextComplete.get(i), Collections.frequency(contextComplete, contextComplete.get(i)));
+        }
+
+        Str.print(frequencyMap.toString());
     }
 
     public static String getData(Path filePath) {
