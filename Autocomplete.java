@@ -35,6 +35,11 @@ public class Autocomplete {
         Str.print(prompt);
     }
 
+    /**
+     * Extracts a string from the input file
+     * @param filePath The path of the input file
+     * @return A string that contains the contents of the file
+     */
     public static String getData(Path filePath) {
         String inputString = "";
 
@@ -48,6 +53,14 @@ public class Autocomplete {
         return inputString;
     }
 
+    /**
+     * Completes an additional word for the given prompt
+     * @param prompt The prompt to complete
+     * @param data The dataset to extract suggestions from
+     * @param contextWords The number of words to look for (as context for the next word)
+     * @param numberOfSuggestions The number of top suggestions to pick a random suggestion from
+     * @return A new string with the prompt and autocompleted word
+     */
     public static String completePrompt(String prompt, String data, int contextWords, int numberOfSuggestions) {
         String promptWords[] = prompt.split(" ");
         String context = "";
