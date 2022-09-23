@@ -26,13 +26,15 @@ public class Autocomplete {
 
         randomGenerator = new Random();
 
-        prompt = Str.input("Enter text to autocomplete: ");
+        while(true) {
+            prompt = Str.input("Enter text to autocomplete: ");
 
-        for (int i = 0; i < wordsToComplete; i++) {
-            prompt = completePrompt(prompt, data, contextWords, numberOfSuggestions);
+            for (int i = 0; i < wordsToComplete; i++) {
+                prompt = completePrompt(prompt, data, contextWords, numberOfSuggestions);
+            }
+
+            Str.print(prompt);
         }
-
-        Str.print(prompt);
     }
 
     /**
