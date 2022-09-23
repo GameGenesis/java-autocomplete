@@ -21,6 +21,39 @@ public class Autocomplete {
             context = String.join(" ", context, promptWords[promptWords.length - i]);
         }
         context = (context + " ").toLowerCase();
+        
+        int index = data.indexOf(context);
+        int dataLength = data.length();
+
+        String complete = "";
+        String completeWord = "";
+        int wordIndex = 0;
+
+        List<Integer> contextIndex = new ArrayList<>();
+        List<String> contextComplete = new ArrayList<>();
+
+        while (index >= 0) {
+            contextIndex.add(index);
+            index = data.indexOf(context, index + 1);
+
+            int beginIndex = index + context.length();
+            int endIndex = index + context.length() + 20;
+
+            if (index >= 0 && endIndex <= dataLength) {
+                complete = data.substring(beginIndex, endIndex);
+                wordIndex = 0;
+                completeWord = complete.split(" ")[wordIndex];
+                
+                while (Pattern.matches("\\p{Punct}", completeWord)) {
+                    wordIndex++;
+                    completeWord = complete.split(" ")[wordIndex];
+                }
+
+                contextComplete.add(completeWord);
+            }
+        }
+
+        Str.print(contextComplete.toString());
     }
 
     public static String getData(Path filePath) {
