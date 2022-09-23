@@ -6,21 +6,28 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class Autocomplete {
 
     public final static Path filePath = Path.of("data.txt");
     public static String data = "";
     public static String prompt = "";
-    public static int contextWords = 2;
+    public static int contextWords = 4;
+    public static int wordsToComplete = 100;
+
+    private static Random randomGenerator;
 
     public static void main(String[] args) {
         data = getData(filePath).toLowerCase();
 
+        randomGenerator = new Random();
+
         prompt = Str.input("Enter text to autocomplete: ");
 
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < wordsToComplete; i++) {
             prompt = completePrompt(prompt, data, contextWords);
         }
 
@@ -75,7 +82,7 @@ public class Autocomplete {
                     completeWord = complete.split(" ")[wordIndex];
                 }
 
-                contextComplete.add(completeWord);
+                contextComplete.add(completeWord.strip());
             }
         }
 
@@ -85,17 +92,27 @@ public class Autocomplete {
             frequencyMap.put(contextComplete.get(i), Collections.frequency(contextComplete, contextComplete.get(i)));
         }
 
-        Map.Entry<String, Integer> maxEntry = null;
+        // Map.Entry<String, Integer> maxEntry = null;
 
-        for (Map.Entry<String, Integer> entry : frequencyMap.entrySet())
-        {
-            if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0)
-            {
-                maxEntry = entry;
-            }
+        // for (Map.Entry<String, Integer> entry : frequencyMap.entrySet())
+        // {
+        //     if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0)
+        //     {
+        //         maxEntry = entry;
+        //     }
+        // }
+
+        List<String> keys = frequencyMap.entrySet().stream().sorted(Map.Entry.<String, Integer>comparingByValue().reversed()).limit(3).map(Map.Entry::getKey).collect(Collectors.toList());
+        String nextEntry = keys.size() > 0 ? keys.get(randomGenerator.nextInt(keys.size())) : "";
+
+        if (nextEntry.isBlank() && contextWords > 2) {
+            return completePrompt(prompt, data, contextWords - 1);
         }
-
-        String newPrompt = maxEntry == null ? String.join(" ", prompt, "is") : String.join(" ", prompt, maxEntry.getKey());
-        return newPrompt;
+        else if (nextEntry.isBlank() && contextWords <= 2) {
+            return String.join(" ", prompt, "and");
+        }
+        else {
+            return String.join(" ", prompt, nextEntry);
+        }
     }
 }
