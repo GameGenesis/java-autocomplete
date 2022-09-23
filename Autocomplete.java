@@ -17,7 +17,30 @@ public class Autocomplete {
 
     public static void main(String[] args) {
         data = getData(filePath).toLowerCase();
+
         prompt = Str.input("Enter text to autocomplete: ");
+
+        for (int i = 0; i < 20; i++) {
+            prompt = completePrompt(prompt, data, contextWords);
+        }
+
+        Str.print(prompt);
+    }
+
+    public static String getData(Path filePath) {
+        String inputString = "";
+
+        try {
+            inputString = Files.readString(filePath);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return inputString;
+    }
+
+    public static String completePrompt(String prompt, String data, int contextWords) {
         String promptWords[] = prompt.split(" ");
         String context = promptWords[promptWords.length - contextWords];
         for (int i = contextWords - 1; i > 0; i--) {
@@ -62,8 +85,6 @@ public class Autocomplete {
             frequencyMap.put(contextComplete.get(i), Collections.frequency(contextComplete, contextComplete.get(i)));
         }
 
-        Str.print(frequencyMap.toString());
-
         Map.Entry<String, Integer> maxEntry = null;
 
         for (Map.Entry<String, Integer> entry : frequencyMap.entrySet())
@@ -74,21 +95,7 @@ public class Autocomplete {
             }
         }
 
-        Str.print(String.join(" ", prompt, maxEntry.getKey()));
+        String newPrompt = maxEntry == null ? String.join(" ", prompt, "is") : String.join(" ", prompt, maxEntry.getKey());
+        return newPrompt;
     }
-
-    public static String getData(Path filePath) {
-        String inputString = "";
-
-        try {
-            inputString = Files.readString(filePath);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return inputString;
-    }
-
-    
 }
